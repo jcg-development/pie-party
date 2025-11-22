@@ -118,4 +118,31 @@ export async function cleanupVotesForPie(pieId: string, categories: readonly str
   await Promise.all(tasks)
 }
 
+// ---------- RSVPs ----------
+export interface RSVP {
+  id: string
+  name: string
+  email: string | null
+  guests: number
+  pieType: 'sweet' | 'savory'
+  notes: string | null
+  createdAt?: Timestamp
+}
 
+export async function listRSVPs(): Promise<RSVP[]> {
+  const snap = await getDocs(query(collection(db, 'rsvps'), orderBy('createdAt', 'desc')))
+  return snap.docs.map(d => {
+    const data = d.data() as Omit<RSVP, 'id'>
+    return { id: d.id, ...data }
+  })
+}
+
+export async function getPieTypeCounts(): Promise<{ sweet: number; savory: number }> {
+  const rsvps = await listRSVPs()
+  const counts = { sweet: 0, savory: 0 }
+  rsvps.forEach(rsvp => {
+    if (rsvp.pieType === 'sweet') counts.sweet++
+    else if (rsvp.pieType === 'savory') counts.savory++
+  })
+  return counts
+}

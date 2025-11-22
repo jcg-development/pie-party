@@ -13,6 +13,8 @@ import {
   getSettings,
   deletePieDoc,
   cleanupVotesForPie,
+  listRSVPs,
+  type RSVP,
 } from '@/lib/db'
 import { deletePieImage } from '@/lib/storage'
 import { downloadCSV } from '@/lib/csv'
@@ -26,6 +28,7 @@ export default function AdminPage() {
   const [phrase, setPhrase] = useState('')
   const [pies, setPies] = useState<any[]>([])
   const [votes, setVotes] = useState<any[]>([])
+  const [rsvps, setRsvps] = useState<RSVP[]>([])
   const [year, setYear] = useState(String(new Date().getFullYear()))
   const [settings, setSettingsState] = useState<{ votingOpen: boolean }>({ votingOpen: true })
 
@@ -66,8 +69,8 @@ export default function AdminPage() {
   }
 
   async function load() {
-    const [p, v, s] = await Promise.all([listPies(), getAllVotes(), getSettings()])
-    setPies(p); setVotes(v); setSettingsState(s)
+    const [p, v, r, s] = await Promise.all([listPies(), getAllVotes(), listRSVPs(), getSettings()])
+    setPies(p); setVotes(v); setRsvps(r); setSettingsState(s)
     await checkAdmin()
   }
 
@@ -83,6 +86,18 @@ export default function AdminPage() {
       description: p.description, photoURL: p.photoURL, photoPath: p.photoPath || '',
     }))
     downloadCSV(`pies-${Date.now()}.csv`, rows)
+  }
+
+  function exportRSVPsCSV() {
+    const rows = rsvps.map((r) => ({
+      name: r.name,
+      email: r.email || '',
+      guests: r.guests,
+      pieType: r.pieType,
+      notes: r.notes || '',
+      createdAt: r.createdAt?.toDate().toISOString() || '',
+    }))
+    downloadCSV(`rsvps-${Date.now()}.csv`, rows)
   }
 
   async function toggleVoting() {
@@ -139,6 +154,7 @@ export default function AdminPage() {
           <SecondaryButton onClick={load}>Refresh Data</SecondaryButton>
           <SecondaryButton onClick={exportPiesCSV}>Export Pies CSV</SecondaryButton>
           <SecondaryButton onClick={exportVotesCSV}>Export Votes CSV</SecondaryButton>
+          <SecondaryButton onClick={exportRSVPsCSV}>Export RSVPs CSV</SecondaryButton>
         </CardContent>
       </Card>
 
@@ -229,9 +245,70 @@ export default function AdminPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* RSVPs List */}
+      <Card>
+        <CardHeader>
+          <CardTitle>RSVPs ({rsvps.length})</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {rsvps.length === 0 ? (
+            <p className="text-sm text-neutral-600">No RSVPs yet.</p>
+          ) : (
+            <div className="space-y-4">
+              {/* Summary Stats */}
+              <div className="grid grid-cols-3 gap-3 mb-4">
+                <div className="p-3 rounded-xl bg-blue-50 border border-blue-200">
+                  <div className="text-2xl font-bold text-blue-900">{rsvps.reduce((sum, r) => sum + r.guests, 0)}</div>
+                  <div className="text-xs text-blue-700">Total Guests</div>
+                </div>
+                <div className="p-3 rounded-xl bg-amber-50 border border-amber-200">
+                  <div className="text-2xl font-bold text-amber-900">{rsvps.filter(r => r.pieType === 'sweet').length}</div>
+                  <div className="text-xs text-amber-700">Sweet Pies</div>
+                </div>
+                <div className="p-3 rounded-xl bg-purple-50 border border-purple-200">
+                  <div className="text-2xl font-bold text-purple-900">{rsvps.filter(r => r.pieType === 'savory').length}</div>
+                  <div className="text-xs text-purple-700">Savory Pies</div>
+                </div>
+              </div>
+
+              {/* RSVP Table */}
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-left border-b">
+                      <th className="py-2 pr-3">Name</th>
+                      <th className="py-2 pr-3">Email</th>
+                      <th className="py-2 pr-3">Guests</th>
+                      <th className="py-2 pr-3">Pie Type</th>
+                      <th className="py-2 pr-3">Notes</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rsvps.map((r: RSVP) => (
+                      <tr key={r.id} className="border-b">
+                        <td className="py-2 pr-3 font-medium">{r.name}</td>
+                        <td className="py-2 pr-3 text-neutral-600">{r.email || '—'}</td>
+                        <td className="py-2 pr-3">{r.guests}</td>
+                        <td className="py-2 pr-3">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                            r.pieType === 'sweet' 
+                              ? 'bg-amber-100 text-amber-800' 
+                              : 'bg-purple-100 text-purple-800'
+                          }`}>
+                            {r.pieType === 'sweet' ? '🥧 Sweet' : '🧀 Savory'}
+                          </span>
+                        </td>
+                        <td className="py-2 pr-3 text-neutral-600 text-xs max-w-xs truncate">{r.notes || '—'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   )
 }
-
-
-
