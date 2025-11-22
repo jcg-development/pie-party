@@ -25,11 +25,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
             <nav className="flex flex-wrap items-center gap-2 text-sm">
               <a className="navlink" href="/">Home</a>
+              <a className="navlink" href="/rsvp">RSVP</a>
+              <a className="navlink" href="/rules">Rules</a>
               <a className="navlink" href="/submit">Submit</a>
               <a className="navlink" href="/vote">Vote</a>
               <a className="navlink" href="/winners">Winners</a>
-              <a className="navlink" href="/rules">Rules</a>
-              <a className="navlink" href="/rsvp">RSVP</a>
               <a className="navlink" href="/admin">Admin</a>
             </nav>
           </div>
