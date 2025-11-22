@@ -15,6 +15,8 @@ import {
   cleanupVotesForPie,
   listRSVPs,
   deleteRSVP,
+  listWinners,
+  deleteWinner,
   type RSVP,
 } from '@/lib/db'
 import { deletePieImage } from '@/lib/storage'
@@ -30,6 +32,7 @@ export default function AdminPage() {
   const [pies, setPies] = useState<any[]>([])
   const [votes, setVotes] = useState<any[]>([])
   const [rsvps, setRsvps] = useState<RSVP[]>([])
+  const [winners, setWinners] = useState<any[]>([])
   const [year, setYear] = useState(String(new Date().getFullYear()))
   const [settings, setSettingsState] = useState<{ votingOpen: boolean; submissionsOpen: boolean }>({ votingOpen: true, submissionsOpen: false })
 
@@ -70,8 +73,8 @@ export default function AdminPage() {
   }
 
   async function load() {
-    const [p, v, r, s] = await Promise.all([listPies(), getAllVotes(), listRSVPs(), getSettings()])
-    setPies(p); setVotes(v); setRsvps(r); setSettingsState(s)
+    const [p, v, r, w, s] = await Promise.all([listPies(), getAllVotes(), listRSVPs(), listWinners(), getSettings()])
+    setPies(p); setVotes(v); setRsvps(r); setWinners(w); setSettingsState(s)
     await checkAdmin()
   }
 
@@ -181,6 +184,7 @@ export default function AdminPage() {
             const pie = pies.find((p) => p.id === sel)
             if (!pie) { alert('Choose a pie'); return }
             await markWinner(year, pie)
+            await load()
             alert('Winner saved')
           }}>
             Save Winner
@@ -332,6 +336,65 @@ export default function AdminPage() {
                   </tbody>
                 </table>
               </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Past Winners */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Past Winners ({winners.length})</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {winners.length === 0 ? (
+            <p className="text-sm text-neutral-600">No past winners yet.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left border-b">
+                    <th className="py-2 pr-3">Year</th>
+                    <th className="py-2 pr-3">Pie</th>
+                    <th className="py-2 pr-3">Baker</th>
+                    <th className="py-2 pr-3">Photo</th>
+                    <th className="py-2 pr-3">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {winners.map((w: any) => (
+                    <tr key={w.id} className="border-b">
+                      <td className="py-2 pr-3 font-medium">{w.year}</td>
+                      <td className="py-2 pr-3">{w.title}</td>
+                      <td className="py-2 pr-3">{w.baker}</td>
+                      <td className="py-2 pr-3">
+                        {w.photoURL ? (
+                          <a className="underline" href={w.photoURL} target="_blank">view</a>
+                        ) : (
+                          <span className="text-red-600">missing</span>
+                        )}
+                      </td>
+                      <td className="py-2 pr-3">
+                        <button
+                          className="btn btn-secondary !border-red-300 !text-red-700 hover:bg-red-50 text-xs"
+                          onClick={async () => {
+                            const yes = confirm(`Delete winner "${w.title}" from ${w.year}?`)
+                            if (!yes) return
+                            try {
+                              await deleteWinner(w.id)
+                              await load()
+                              alert('Winner deleted.')
+                            } catch (e: any) {
+                              console.error('Delete failed', e)
+                              alert(`Delete failed.\n\nDetails: ${e?.code || e?.message || e}`)
+                            }
+                          }}
+                        >Delete</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </CardContent>

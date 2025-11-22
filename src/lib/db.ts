@@ -94,6 +94,10 @@ export async function listWinners() {
   return snap.docs.map(d => ({ id: d.id, ...(d.data() as any) }))
 }
 
+export async function deleteWinner(winnerId: string) {
+  await deleteDoc(doc(db, 'winners', winnerId))
+}
+
 // …imports…
 export interface Pie { /* … */ photoURL: string; photoPath?: string; /* … */ }
 
