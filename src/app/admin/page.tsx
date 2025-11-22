@@ -31,7 +31,7 @@ export default function AdminPage() {
   const [votes, setVotes] = useState<any[]>([])
   const [rsvps, setRsvps] = useState<RSVP[]>([])
   const [year, setYear] = useState(String(new Date().getFullYear()))
-  const [settings, setSettingsState] = useState<{ votingOpen: boolean }>({ votingOpen: true })
+  const [settings, setSettingsState] = useState<{ votingOpen: boolean; submissionsOpen: boolean }>({ votingOpen: true, submissionsOpen: false })
 
   // Admin banner
   const [adminStatus, setAdminStatus] = useState<'unknown' | 'yes' | 'no'>('unknown')
@@ -104,7 +104,13 @@ export default function AdminPage() {
   async function toggleVoting() {
     const next = !settings.votingOpen
     await setSettings({ votingOpen: next })
-    setSettingsState({ votingOpen: next })
+    setSettingsState({ ...settings, votingOpen: next })
+  }
+
+  async function toggleSubmissions() {
+    const next = !settings.submissionsOpen
+    await setSettings({ submissionsOpen: next })
+    setSettingsState({ ...settings, submissionsOpen: next })
   }
 
   if (!authd) {
@@ -150,6 +156,8 @@ export default function AdminPage() {
       <Card>
         <CardHeader><CardTitle>Controls</CardTitle></CardHeader>
         <CardContent className="flex flex-wrap gap-3 items-center">
+          <span className="badge">{settings.submissionsOpen ? 'Submissions Open' : 'Submissions Closed'}</span>
+          <PrimaryButton onClick={toggleSubmissions}>{settings.submissionsOpen ? 'Close Submissions' : 'Open Submissions'}</PrimaryButton>
           <span className="badge">{settings.votingOpen ? 'Voting Open' : 'Voting Closed'}</span>
           <PrimaryButton onClick={toggleVoting}>{settings.votingOpen ? 'Close Voting' : 'Open Voting'}</PrimaryButton>
           <SecondaryButton onClick={load}>Refresh Data</SecondaryButton>

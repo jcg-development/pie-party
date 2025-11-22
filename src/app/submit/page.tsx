@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle, PrimaryButton } from '@/components/ui'
 import { ensureAnonAuth } from '@/lib/firebase'
-import { listPies, submitPie } from '@/lib/db'
+import { listPies, submitPie, getSettings } from '@/lib/db'
 import { uploadPieImage } from '@/lib/storage'
 
 type PieType = 'sweet' | 'savory'
@@ -11,6 +11,8 @@ type SortKey = 'newest' | 'oldest' | 'az' | 'za' | 'sweetFirst' | 'savoryFirst'
 export default function SubmitPage() {
   const [userReady, setUserReady] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [submissionsOpen, setSubmissionsOpen] = useState(false)
+  const [loadingSettings, setLoadingSettings] = useState(true)
 
   // form
   const [name, setName] = useState('')
@@ -29,6 +31,9 @@ export default function SubmitPage() {
     (async () => {
       await ensureAnonAuth()
       setUserReady(true)
+      const settings = await getSettings()
+      setSubmissionsOpen(settings.submissionsOpen)
+      setLoadingSettings(false)
       await refreshList()
     })()
   }, [])
@@ -173,36 +178,51 @@ export default function SubmitPage() {
       <Card>
         <CardHeader><CardTitle>Submit Your Pie</CardTitle></CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-4">
-            <div className="space-y-3">
-              <input className="input" placeholder="Pie name (e.g., Maple Pecan)" value={name} onChange={e=>setName(e.target.value)} />
-              <input className="input" placeholder="Baker name" value={baker} onChange={e=>setBaker(e.target.value)} />
-              {/* Pie type selector */}
-              <div className="flex flex-wrap items-center gap-4">
-                <label className="text-sm text-neutral-700">Type:</label>
-                <label className="flex items-center gap-2">
-                  <input type="radio" name="type" value="sweet" checked={type==='sweet'} onChange={()=>setType('sweet')} />
-                  <span>🍰 Sweet</span>
-                </label>
-                <label className="flex items-center gap-2">
-                  <input type="radio" name="type" value="savory" checked={type==='savory'} onChange={()=>setType('savory')} />
-                  <span>🥟 Savory</span>
-                </label>
-              </div>
-              <textarea className="textarea" placeholder="Short description (ingredients, story, allergens)" rows={6} value={desc} onChange={e=>setDesc(e.target.value)} />
+          {loadingSettings ? (
+            <p className="text-sm text-neutral-600">Loading...</p>
+          ) : !submissionsOpen ? (
+            <div className="text-center py-8 space-y-3">
+              <div className="text-6xl">🥧</div>
+              <h3 className="text-xl font-semibold">Submissions Coming Soon!</h3>
+              <p className="text-neutral-600">
+                You can submit your pie on the night of the party.
+              </p>
+              <p className="text-neutral-600">
+                See you soon! ❤️
+              </p>
             </div>
-            <div className="space-y-3">
-              <div className="rounded-2xl border p-4 bg-neutral-50">
-                <p className="text-sm text-neutral-600 mb-2">Photo (JPG/PNG)</p>
-                <input type="file" accept="image/*" onChange={e=>setFile(e.target.files?.[0]||null)} />
-                <div className="text-xs text-neutral-500 mt-2">Max ~10MB recommended</div>
+          ) : (
+            <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-3">
+                <input className="input" placeholder="Pie name (e.g., Maple Pecan)" value={name} onChange={e=>setName(e.target.value)} />
+                <input className="input" placeholder="Baker name" value={baker} onChange={e=>setBaker(e.target.value)} />
+                {/* Pie type selector */}
+                <div className="flex flex-wrap items-center gap-4">
+                  <label className="text-sm text-neutral-700">Type:</label>
+                  <label className="flex items-center gap-2">
+                    <input type="radio" name="type" value="sweet" checked={type==='sweet'} onChange={()=>setType('sweet')} />
+                    <span>🍰 Sweet</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input type="radio" name="type" value="savory" checked={type==='savory'} onChange={()=>setType('savory')} />
+                    <span>🥟 Savory</span>
+                  </label>
+                </div>
+                <textarea className="textarea" placeholder="Short description (ingredients, story, allergens)" rows={6} value={desc} onChange={e=>setDesc(e.target.value)} />
               </div>
-              <PrimaryButton type="submit" disabled={loading || !userReady} className="w-full">
-                {loading ? 'Uploading…' : 'Submit Pie'}
-              </PrimaryButton>
-              {!userReady && <p className="text-xs text-amber-700">Signing you in anonymously…</p>}
-            </div>
-          </form>
+              <div className="space-y-3">
+                <div className="rounded-2xl border p-4 bg-neutral-50">
+                  <p className="text-sm text-neutral-600 mb-2">Photo (JPG/PNG)</p>
+                  <input type="file" accept="image/*" onChange={e=>setFile(e.target.files?.[0]||null)} />
+                  <div className="text-xs text-neutral-500 mt-2">Max ~10MB recommended</div>
+                </div>
+                <PrimaryButton type="submit" disabled={loading || !userReady} className="w-full">
+                  {loading ? 'Uploading…' : 'Submit Pie'}
+                </PrimaryButton>
+                {!userReady && <p className="text-xs text-amber-700">Signing you in anonymously…</p>}
+              </div>
+            </form>
+          )}
         </CardContent>
       </Card>
     </div>

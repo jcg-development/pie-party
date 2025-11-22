@@ -47,14 +47,17 @@ export async function listPies(): Promise<Pie[]> {
 
 
 // ---------- Settings (voting open/closed) ----------
-export async function getSettings(): Promise<{ votingOpen: boolean }> {
+export async function getSettings(): Promise<{ votingOpen: boolean; submissionsOpen: boolean }> {
   const s = await getDoc(settingsDocRef())
-  if (!s.exists()) return { votingOpen: true }
-  const data = s.data() as { votingOpen?: boolean }
-  return { votingOpen: !!data.votingOpen }
+  if (!s.exists()) return { votingOpen: true, submissionsOpen: false }
+  const data = s.data() as { votingOpen?: boolean; submissionsOpen?: boolean }
+  return { 
+    votingOpen: !!data.votingOpen,
+    submissionsOpen: data.submissionsOpen !== undefined ? !!data.submissionsOpen : false
+  }
 }
 
-export async function setSettings(data: { votingOpen: boolean }) {
+export async function setSettings(data: { votingOpen?: boolean; submissionsOpen?: boolean }) {
   await setDoc(settingsDocRef(), data, { merge: true })
 }
 
