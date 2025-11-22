@@ -21,7 +21,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <span className="text-3xl">🥧</span>
               <div>
                 <h1 className="text-xl md:text-2xl font-bold">Pie Party {new Date().getFullYear()}</h1>
-                <p className="text-sm text-neutral-600">Bake • Share • Vote • Crown the Champion</p>
               </div>
             </div>
             <nav className="flex flex-wrap items-center gap-2 text-sm">
