@@ -70,34 +70,6 @@ export default function RulesPage() {
         </p>
       </section>
 
-      {/* Timeline */}
-      <section className="card p-6">
-        <h3 className="text-xl font-semibold flex items-center gap-2">🕒 Event Timeline</h3>
-        <div className="mt-4 space-y-3">
-          <div className="flex items-center gap-3">
-            <span className="badge">6:00p</span>
-            <div>
-              <div className="font-medium">Doors & Pie Check-In</div>
-              <div className="text-sm text-neutral-600">Snap photos, add descriptions, display your pie.</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="badge">7:30p</span>
-            <div>
-              <div className="font-medium">Voting Opens</div>
-              <div className="text-sm text-neutral-600">Guests head to <span className="badge">/vote</span> and pick favorites.</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="badge">9:00p</span>
-            <div>
-              <div className="font-medium">Voting Closes & Winners Announced</div>
-              <div className="text-sm text-neutral-600">Celebrate the champs 🥳</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Footer note */}
       <p className="text-sm text-neutral-600">
         Customize anything here to match your party vibes. Add or remove sections freely.
@@ -105,4 +77,3 @@ export default function RulesPage() {
     </div>
   )
 }
-
