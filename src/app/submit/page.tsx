@@ -213,8 +213,13 @@ export default function SubmitPage() {
               <div className="space-y-3">
                 <div className="rounded-2xl border p-4 bg-neutral-50">
                   <p className="text-sm text-neutral-600 mb-2">Photo (JPG/PNG)</p>
-                  <input type="file" accept="image/*" onChange={e=>setFile(e.target.files?.[0]||null)} />
-                  <div className="text-xs text-neutral-500 mt-2">Max ~10MB recommended</div>
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    capture="environment"
+                    onChange={e=>setFile(e.target.files?.[0]||null)} 
+                  />
+                  <div className="text-xs text-neutral-500 mt-2">Take a photo or upload from your device. Max ~10MB recommended.</div>
                 </div>
                 <PrimaryButton type="submit" disabled={loading || !userReady} className="w-full">
                   {loading ? 'Uploading…' : 'Submit Pie'}
