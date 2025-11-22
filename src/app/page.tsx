@@ -38,7 +38,6 @@ export default function HomePage() {
           <div className="mt-6 flex flex-wrap gap-3">
             <Link href="/submit" className="btn btn-primary">Submit a Pie</Link>
             <Link href="/vote" className="btn btn-secondary">{votingOpen ? 'Go Vote' : 'See Tally'}</Link>
-            <Link href="/rules" className="btn btn-secondary">Rules</Link>
           </div>
         </div>
 
@@ -62,6 +61,47 @@ export default function HomePage() {
             </div>
           </CardContent>
         </div>
+      </section>
+
+      {/* Event Timeline */}
+      <section className="card">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            🕐 Event Timeline
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-start gap-4">
+            <div className="flex-shrink-0 w-20 text-right">
+              <div className="font-bold text-lg">5:00 PM</div>
+            </div>
+            <div className="flex-1 pb-8 border-l-2 border-amber-200 pl-6 relative">
+              <div className="absolute -left-2 top-1 w-4 h-4 rounded-full bg-amber-400 border-2 border-white"></div>
+              <div className="font-semibold text-neutral-900">Doors & Pie Check-In</div>
+              <p className="text-sm text-neutral-600 mt-1">Arrive with your pie and get checked in</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-4">
+            <div className="flex-shrink-0 w-20 text-right">
+              <div className="font-bold text-lg">6:15 PM</div>
+            </div>
+            <div className="flex-1 pb-8 border-l-2 border-purple-200 pl-6 relative">
+              <div className="absolute -left-2 top-1 w-4 h-4 rounded-full bg-purple-400 border-2 border-white"></div>
+              <div className="font-semibold text-neutral-900">Tasting & Voting Opens</div>
+              <p className="text-sm text-neutral-600 mt-1">Sample the pies and cast your votes</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-4">
+            <div className="flex-shrink-0 w-20 text-right">
+              <div className="font-bold text-lg">7:30 PM</div>
+            </div>
+            <div className="flex-1 pl-6 relative">
+              <div className="absolute -left-2 top-1 w-4 h-4 rounded-full bg-red-400 border-2 border-white"></div>
+              <div className="font-semibold text-neutral-900">Voting Closes</div>
+              <p className="text-sm text-neutral-600 mt-1">Final votes tallied and winner announced!</p>
+            </div>
+          </div>
+        </CardContent>
       </section>
 
       {/* Live Tally preview */}
@@ -102,4 +142,3 @@ export default function HomePage() {
     </div>
   )
 }
-
