@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { ensureAnonAuth } from '@/lib/firebase'
 import { db } from '@/lib/firebase'
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
-import { getPieTypeCounts } from '@/lib/db'
+import { getPieTypeCounts, listRSVPs, type RSVP } from '@/lib/db'
 import { PIE_TYPE_CAPS } from '@/lib/config'
 
 function withTimeout<T>(p: Promise<T>, ms = 12000): Promise<T> {
@@ -27,6 +27,8 @@ export default function RSVPPage() {
   
   const [pieCounts, setPieCounts] = useState({ sweet: 0, savory: 0 })
   const [loadingCounts, setLoadingCounts] = useState(true)
+  const [rsvps, setRsvps] = useState<RSVP[]>([])
+  const [loadingRsvps, setLoadingRsvps] = useState(true)
 
   useEffect(() => {
     (async () => {
@@ -35,14 +37,20 @@ export default function RSVPPage() {
         console.log('[RSVP] signed in as', u.uid)
         setReady(true)
         
-        // Load current pie counts
-        const counts = await getPieTypeCounts()
+        // Load current pie counts and RSVPs
+        const [counts, rsvpList] = await Promise.all([
+          getPieTypeCounts(),
+          listRSVPs()
+        ])
         setPieCounts(counts)
+        setRsvps(rsvpList)
         setLoadingCounts(false)
+        setLoadingRsvps(false)
       } catch (e) {
         console.error('[RSVP] auth failed:', e)
         alert('Could not sign you in. Check Anonymous Auth in Firebase is enabled.')
         setLoadingCounts(false)
+        setLoadingRsvps(false)
       }
     })()
   }, [])
@@ -239,6 +247,37 @@ export default function RSVPPage() {
           * Required fields. If a pie type is full, please contact the host to request an exception.
         </p>
       </form>
+
+      {/* RSVP List */}
+      <div className="card p-6">
+        <h2 className="text-xl font-semibold mb-4">Who&apos;s Attending ({rsvps.length})</h2>
+        
+        {loadingRsvps ? (
+          <p className="text-sm text-neutral-600">Loading attendees...</p>
+        ) : rsvps.length === 0 ? (
+          <p className="text-sm text-neutral-600">No RSVPs yet. Be the first to sign up!</p>
+        ) : (
+          <div className="space-y-3">
+            {rsvps.map((rsvp) => (
+              <div key={rsvp.id} className="flex items-center justify-between p-3 rounded-xl border bg-white">
+                <div className="flex-1">
+                  <div className="font-medium">{rsvp.name}</div>
+                  {rsvp.guests > 1 && (
+                    <div className="text-xs text-neutral-600">+{rsvp.guests - 1} guest{rsvp.guests > 2 ? 's' : ''}</div>
+                  )}
+                </div>
+                <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
+                  rsvp.pieType === 'sweet' 
+                    ? 'bg-amber-100 text-amber-800' 
+                    : 'bg-purple-100 text-purple-800'
+                }`}>
+                  {rsvp.pieType === 'sweet' ? '🥧 Sweet' : '🧀 Savory'}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
