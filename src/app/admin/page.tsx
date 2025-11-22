@@ -14,6 +14,7 @@ import {
   deletePieDoc,
   cleanupVotesForPie,
   listRSVPs,
+  deleteRSVP,
   type RSVP,
 } from '@/lib/db'
 import { deletePieImage } from '@/lib/storage'
@@ -282,6 +283,7 @@ export default function AdminPage() {
                       <th className="py-2 pr-3">Guests</th>
                       <th className="py-2 pr-3">Pie Type</th>
                       <th className="py-2 pr-3">Notes</th>
+                      <th className="py-2 pr-3">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -300,6 +302,23 @@ export default function AdminPage() {
                           </span>
                         </td>
                         <td className="py-2 pr-3 text-neutral-600 text-xs max-w-xs truncate">{r.notes || '—'}</td>
+                        <td className="py-2 pr-3">
+                          <button
+                            className="btn btn-secondary !border-red-300 !text-red-700 hover:bg-red-50 text-xs"
+                            onClick={async () => {
+                              const yes = confirm(`Delete RSVP for "${r.name}"?`)
+                              if (!yes) return
+                              try {
+                                await deleteRSVP(r.id)
+                                await load()
+                                alert('RSVP deleted.')
+                              } catch (e: any) {
+                                console.error('Delete failed', e)
+                                alert(`Delete failed.\n\nDetails: ${e?.code || e?.message || e}`)
+                              }
+                            }}
+                          >Delete</button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>

@@ -146,3 +146,7 @@ export async function getPieTypeCounts(): Promise<{ sweet: number; savory: numbe
   })
   return counts
 }
+
+export async function deleteRSVP(rsvpId: string) {
+  await deleteDoc(doc(db, 'rsvps', rsvpId))
+}
