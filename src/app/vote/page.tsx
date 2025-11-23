@@ -64,21 +64,21 @@ export default function VotePage() {
           <CardTitle className="flex items-center gap-2">🏆 Voting Categories</CardTitle>
         </CardHeader>
         <CardContent className="grid md:grid-cols-3 gap-4">
-          <div className="rounded-xl border-2 border-amber-200 bg-amber-50/50 p-4">
-            <div className="font-bold text-lg flex items-center gap-2 text-amber-900">✨ PieZaz</div>
-            <p className="text-sm text-neutral-700 mt-2">
+          <div className="rounded-lg border-2 border-zinc-200 bg-white p-4">
+            <div className="font-bold text-lg flex items-center gap-2 text-zinc-900">✨ PieZaz</div>
+            <p className="text-sm text-zinc-600 mt-2">
               The essence—does it have that wow factor? Is it special, memorable, iconic?
             </p>
           </div>
-          <div className="rounded-xl border-2 border-purple-200 bg-purple-50/50 p-4">
-            <div className="font-bold text-lg flex items-center gap-2 text-purple-900">😋 Taste</div>
-            <p className="text-sm text-neutral-700 mt-2">
+          <div className="rounded-lg border-2 border-zinc-200 bg-white p-4">
+            <div className="font-bold text-lg flex items-center gap-2 text-zinc-900">😋 Taste</div>
+            <p className="text-sm text-zinc-600 mt-2">
               Balanced flavor & texture. Do you want another slice… or the whole thing?
             </p>
           </div>
-          <div className="rounded-xl border-2 border-blue-200 bg-blue-50/50 p-4">
-            <div className="font-bold text-lg flex items-center gap-2 text-blue-900">🎨 Presentation</div>
-            <p className="text-sm text-neutral-700 mt-2">
+          <div className="rounded-lg border-2 border-zinc-200 bg-white p-4">
+            <div className="font-bold text-lg flex items-center gap-2 text-zinc-900">🎨 Presentation</div>
+            <p className="text-sm text-zinc-600 mt-2">
               Originality, design, seasonal flair, and plate appeal. Camera-ready counts.
             </p>
           </div>
@@ -89,13 +89,9 @@ export default function VotePage() {
         <div className="grid md:grid-cols-3 gap-6">
           {CATEGORIES.map((cat, idx) => (
             <div key={cat} className="space-y-4">
-              <div className={`rounded-xl p-4 ${
-                idx === 0 ? 'bg-amber-50 border-2 border-amber-200' : 
-                idx === 1 ? 'bg-purple-50 border-2 border-purple-200' : 
-                'bg-blue-50 border-2 border-blue-200'
-              }`}>
-                <h4 className="font-bold text-lg">{cat}</h4>
-                <p className="text-xs text-neutral-600 mt-1">Cast your vote below</p>
+              <div className="rounded-lg p-4 bg-zinc-900 border-2 border-zinc-800">
+                <h4 className="font-bold text-lg text-white">{cat}</h4>
+                <p className="text-xs text-zinc-400 mt-1">Cast your vote below</p>
               </div>
               
               <div className="space-y-3">

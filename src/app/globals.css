@@ -6,24 +6,27 @@
   --radius: 8px;
 }
 
-/* === Modern Sharp Theme Tokens === */
+/* === Sleek High-Contrast Theme === */
 :root {
   --bg-primary: #ffffff;
-  --bg-secondary: #f8fafc;
-  --border-color: #e2e8f0;
-  --primary: #1e40af;
-  --primary-hover: #1e3a8a;
-  --accent: #f97316;
-  --accent-hover: #ea580c;
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
+  --bg-secondary: #fafafa;
+  --bg-subtle: #f5f5f5;
+  --border-color: #d4d4d8;
+  --border-light: #e4e4e7;
+  --primary: #18181b;
+  --primary-hover: #09090b;
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --text-primary: #09090b;
+  --text-secondary: #52525b;
+  --text-muted: #71717a;
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
-/* Page background - clean and minimal */
+/* Page background - pure white */
 html, body {
-  background: var(--bg-secondary);
+  background: #ffffff;
   color: var(--text-primary);
 }
 
