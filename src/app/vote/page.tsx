@@ -8,7 +8,10 @@ import { getSettings, listPies, saveVote, getAllVotes } from '@/lib/db'
 export default function VotePage() {
   const [pies, setPies] = useState<any[]>([])
   const [votes, setVotes] = useState<any[]>([])
-  const [myVotes, setMyVotes] = useState<Record<Category,string>>({ 'PieZaz':'', 'Taste':'', 'Presentation':''})
+  const [myVotes, setMyVotes] = useState<Record<string,string>>({
+    'PieZaz-sweet':'', 'Taste-sweet':'', 'Presentation-sweet':'',
+    'PieZaz-savory':'', 'Taste-savory':'', 'Presentation-savory':''
+  })
   const [settings, setSettings] = useState<{votingOpen:boolean}>({ votingOpen: true })
   const [loading, setLoading] = useState(true)
 
@@ -19,32 +22,42 @@ export default function VotePage() {
       setPies(p); setVotes(v); setSettings(s); setLoading(false)
       const mine = v.find((x:any)=> x.id === user.uid) || {}
       setMyVotes({
-        'PieZaz': mine['PieZaz'] || '',
-        'Taste': mine['Taste'] || '',
-        'Presentation': mine['Presentation'] || ''
+        'PieZaz-sweet': mine['PieZaz-sweet'] || '',
+        'Taste-sweet': mine['Taste-sweet'] || '',
+        'Presentation-sweet': mine['Presentation-sweet'] || '',
+        'PieZaz-savory': mine['PieZaz-savory'] || '',
+        'Taste-savory': mine['Taste-savory'] || '',
+        'Presentation-savory': mine['Presentation-savory'] || ''
       })
     })()
   }, [])
 
+  const sweetPies = useMemo(() => pies.filter(p => p.type === 'sweet'), [pies])
+  const savoryPies = useMemo(() => pies.filter(p => p.type === 'savory'), [pies])
+
   const tallies = useMemo(() => {
-    const t: Record<Category, Record<string, number>> = {
-      'PieZaz': {}, 'Taste': {}, 'Presentation': {}
+    const t: Record<string, Record<string, number>> = {
+      'PieZaz-sweet': {}, 'Taste-sweet': {}, 'Presentation-sweet': {},
+      'PieZaz-savory': {}, 'Taste-savory': {}, 'Presentation-savory': {}
     }
     votes.forEach((v:any) => {
       CATEGORIES.forEach(cat => {
-        const pid = v[cat]
-        if (pid) t[cat][pid] = (t[cat][pid] || 0) + 1
+        const sweetKey = `${cat}-sweet`
+        const savoryKey = `${cat}-savory`
+        if (v[sweetKey]) t[sweetKey][v[sweetKey]] = (t[sweetKey][v[sweetKey]] || 0) + 1
+        if (v[savoryKey]) t[savoryKey][v[savoryKey]] = (t[savoryKey][v[savoryKey]] || 0) + 1
       })
     })
     return t
   }, [votes])
 
-  async function cast(cat: Category, pieId: string) {
+  async function cast(cat: Category, pieType: 'sweet' | 'savory', pieId: string) {
     if (!settings.votingOpen) { alert('Voting is currently closed'); return }
     const uid = auth.currentUser?.uid
     if (!uid) { alert('Not signed in'); return }
-    await saveVote(uid, pieId, cat)
-    setMyVotes(prev => ({ ...prev, [cat]: pieId }))
+    const voteKey = `${cat}-${pieType}`
+    await saveVote(uid, pieId, voteKey as any)
+    setMyVotes(prev => ({ ...prev, [voteKey]: pieId }))
     // refresh tallies
     const v = await getAllVotes()
     setVotes(v)
@@ -86,53 +99,125 @@ export default function VotePage() {
       </Card>
 
       {loading ? <p>Loading pies…</p> : (
-        <div className="grid md:grid-cols-3 gap-6">
-          {CATEGORIES.map((cat, idx) => (
-            <div key={cat} className="space-y-4">
-              <div className="rounded-lg p-4 bg-zinc-900 border-2 border-zinc-800">
-                <h4 className="font-bold text-lg text-white">{cat}</h4>
-                <p className="text-xs text-zinc-400 mt-1">Cast your vote below</p>
-              </div>
-              
-              <div className="space-y-3">
-                {pies.map(p => (
-                  <div 
-                    key={p.id} 
-                    className={`card overflow-hidden transition-all ${
-                      myVotes[cat]===p.id ? 'ring-2 ring-emerald-500 shadow-lg' : 'hover:shadow-md'
-                    }`}
-                  >
-                    <div className="p-3 border-b bg-white">
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="font-semibold text-sm">{p.name}</div>
-                        {myVotes[cat]===p.id && <span className="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-medium">✓ Your Vote</span>}
-                      </div>
-                      <div className="text-xs text-neutral-600">by {p.baker}</div>
-                      <div className="text-xs text-neutral-500 mt-1">{tallies[cat][p.id]||0} votes</div>
-                    </div>
-                    <div className="p-3 space-y-2">
-                      {p.photoURL ? (
-                        <img src={p.photoURL} className="w-full h-32 object-cover rounded-lg" alt={p.name} />
-                      ) : (
-                        <div className="h-32 bg-neutral-100 rounded-lg grid place-items-center text-neutral-400 text-xs">No photo</div>
-                      )}
-                      <PrimaryButton 
-                        onClick={()=>cast(cat, p.id)} 
-                        className="w-full text-sm py-2"
-                      >
-                        {myVotes[cat]===p.id ? '✓ Voted' : 'Vote'}
-                      </PrimaryButton>
-                    </div>
-                  </div>
-                ))}
-              </div>
+        <div className="space-y-8">
+          {/* Sweet Pies Section */}
+          <div>
+            <div className="mb-6 p-4 rounded-lg bg-amber-50 border-2 border-amber-200">
+              <h3 className="text-xl font-bold text-amber-900 flex items-center gap-2">
+                🥧 Sweet Pies
+              </h3>
+              <p className="text-sm text-amber-700 mt-1">Vote for your favorites in each category</p>
             </div>
-          ))}
+            
+            <div className="grid md:grid-cols-3 gap-6">
+              {CATEGORIES.map((cat, idx) => (
+                <div key={`sweet-${cat}`} className="space-y-4">
+                  <div className="rounded-lg p-4 bg-zinc-900 border-2 border-zinc-800">
+                    <h4 className="font-bold text-lg text-white">{cat}</h4>
+                    <p className="text-xs text-zinc-400 mt-1">Sweet pies only</p>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    {sweetPies.map(p => {
+                      const voteKey = `${cat}-sweet`
+                      return (
+                        <div 
+                          key={p.id} 
+                          className={`card overflow-hidden transition-all ${
+                            myVotes[voteKey]===p.id ? 'ring-2 ring-emerald-500 shadow-lg' : 'hover:shadow-md'
+                          }`}
+                        >
+                          <div className="p-3 border-b bg-white">
+                            <div className="flex items-center justify-between mb-1">
+                              <div className="font-semibold text-sm">{p.name}</div>
+                              {myVotes[voteKey]===p.id && <span className="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-medium">✓ Your Vote</span>}
+                            </div>
+                            <div className="text-xs text-neutral-600">by {p.baker}</div>
+                            <div className="text-xs text-neutral-500 mt-1">{tallies[voteKey][p.id]||0} votes</div>
+                          </div>
+                          <div className="p-3 space-y-2">
+                            {p.photoURL ? (
+                              <img src={p.photoURL} className="w-full h-32 object-cover rounded-lg" alt={p.name} />
+                            ) : (
+                              <div className="h-32 bg-neutral-100 rounded-lg grid place-items-center text-neutral-400 text-xs">No photo</div>
+                            )}
+                            <PrimaryButton 
+                              onClick={()=>cast(cat, 'sweet', p.id)} 
+                              className="w-full text-sm py-2"
+                            >
+                              {myVotes[voteKey]===p.id ? '✓ Voted' : 'Vote'}
+                            </PrimaryButton>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Savory Pies Section */}
+          <div>
+            <div className="mb-6 p-4 rounded-lg bg-purple-50 border-2 border-purple-200">
+              <h3 className="text-xl font-bold text-purple-900 flex items-center gap-2">
+                🧀 Savory Pies
+              </h3>
+              <p className="text-sm text-purple-700 mt-1">Vote for your favorites in each category</p>
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-6">
+              {CATEGORIES.map((cat, idx) => (
+                <div key={`savory-${cat}`} className="space-y-4">
+                  <div className="rounded-lg p-4 bg-zinc-900 border-2 border-zinc-800">
+                    <h4 className="font-bold text-lg text-white">{cat}</h4>
+                    <p className="text-xs text-zinc-400 mt-1">Savory pies only</p>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    {savoryPies.map(p => {
+                      const voteKey = `${cat}-savory`
+                      return (
+                        <div 
+                          key={p.id} 
+                          className={`card overflow-hidden transition-all ${
+                            myVotes[voteKey]===p.id ? 'ring-2 ring-emerald-500 shadow-lg' : 'hover:shadow-md'
+                          }`}
+                        >
+                          <div className="p-3 border-b bg-white">
+                            <div className="flex items-center justify-between mb-1">
+                              <div className="font-semibold text-sm">{p.name}</div>
+                              {myVotes[voteKey]===p.id && <span className="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-medium">✓ Your Vote</span>}
+                            </div>
+                            <div className="text-xs text-neutral-600">by {p.baker}</div>
+                            <div className="text-xs text-neutral-500 mt-1">{tallies[voteKey][p.id]||0} votes</div>
+                          </div>
+                          <div className="p-3 space-y-2">
+                            {p.photoURL ? (
+                              <img src={p.photoURL} className="w-full h-32 object-cover rounded-lg" alt={p.name} />
+                            ) : (
+                              <div className="h-32 bg-neutral-100 rounded-lg grid place-items-center text-neutral-400 text-xs">No photo</div>
+                            )}
+                            <PrimaryButton 
+                              onClick={()=>cast(cat, 'savory', p.id)} 
+                              className="w-full text-sm py-2"
+                            >
+                              {myVotes[voteKey]===p.id ? '✓ Voted' : 'Vote'}
+                            </PrimaryButton>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       )}
       
       <p className="text-xs text-neutral-500 text-center">
-        One vote per category. You can change your vote anytime while voting is open.
+        You get 6 total votes: 3 for sweet pies (one per category) and 3 for savory pies (one per category). You can change your votes anytime while voting is open.
       </p>
     </section>
   )
