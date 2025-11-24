@@ -112,9 +112,9 @@ export default function VotePage() {
             <div className="grid md:grid-cols-3 gap-6">
               {CATEGORIES.map((cat, idx) => (
                 <div key={`sweet-${cat}`} className="space-y-4">
-                  <div className="rounded-lg p-4 bg-zinc-900 border-2 border-zinc-800">
-                    <h4 className="font-bold text-lg text-white">{cat}</h4>
-                    <p className="text-xs text-zinc-400 mt-1">Sweet pies only</p>
+                  <div className="rounded-lg p-4 bg-amber-100 border-2 border-amber-300">
+                    <h4 className="font-bold text-lg text-amber-900">{cat}</h4>
+                    <p className="text-xs text-amber-700 mt-1">Sweet pies only</p>
                   </div>
                   
                   <div className="space-y-3">
@@ -169,9 +169,9 @@ export default function VotePage() {
             <div className="grid md:grid-cols-3 gap-6">
               {CATEGORIES.map((cat, idx) => (
                 <div key={`savory-${cat}`} className="space-y-4">
-                  <div className="rounded-lg p-4 bg-zinc-900 border-2 border-zinc-800">
-                    <h4 className="font-bold text-lg text-white">{cat}</h4>
-                    <p className="text-xs text-zinc-400 mt-1">Savory pies only</p>
+                  <div className="rounded-lg p-4 bg-purple-100 border-2 border-purple-300">
+                    <h4 className="font-bold text-lg text-purple-900">{cat}</h4>
+                    <p className="text-xs text-purple-700 mt-1">Savory pies only</p>
                   </div>
                   
                   <div className="space-y-3">
