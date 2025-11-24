@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { ensureAnonAuth } from '@/lib/firebase'
 import { db } from '@/lib/firebase'
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
-import { getPieTypeCounts, listRSVPs, type RSVP } from '@/lib/db'
+import { getPieTypeCounts, listRSVPs, updateRSVP, type RSVP } from '@/lib/db'
 import { PIE_TYPE_CAPS } from '@/lib/config'
 
 function withTimeout<T>(p: Promise<T>, ms = 12000): Promise<T> {
@@ -23,7 +23,11 @@ export default function RSVPPage() {
   const [email, setEmail] = useState('')
   const [guests, setGuests] = useState(1)
   const [pieType, setPieType] = useState<'sweet' | 'savory'>('sweet')
+  const [pieName, setPieName] = useState('')
   const [notes, setNotes] = useState('')
+  
+  const [editingRsvp, setEditingRsvp] = useState<RSVP | null>(null)
+  const [editPieName, setEditPieName] = useState('')
   
   const [pieCounts, setPieCounts] = useState({ sweet: 0, savory: 0 })
   const [loadingCounts, setLoadingCounts] = useState(true)
@@ -80,6 +84,7 @@ export default function RSVPPage() {
         email: email.trim() || null,
         guests: Number(guests) || 1,
         pieType,
+        pieName: pieName.trim() || null,
         notes: notes.trim() || null,
         createdAt: serverTimestamp(),
       }))
@@ -174,6 +179,17 @@ export default function RSVPPage() {
             </div>
 
             <div>
+              <label className="block text-sm font-medium mb-1">Specific Pie Name</label>
+              <input 
+                className="input" 
+                placeholder="e.g., Apple Pie, Peach Cobbler, Chicken Pot Pie" 
+                value={pieName} 
+                onChange={e=>setPieName(e.target.value)} 
+              />
+              <p className="text-xs text-neutral-500 mt-1">Optional but recommended - helps everyone know what to expect!</p>
+            </div>
+
+            <div>
               <label className="block text-sm font-medium mb-2">Pie Type You&apos;ll Bring *</label>
               <div className="space-y-2">
                 <label className={`flex items-center p-3 rounded-xl border-2 cursor-pointer transition ${
@@ -259,20 +275,79 @@ export default function RSVPPage() {
         ) : (
           <div className="space-y-3">
             {rsvps.map((rsvp) => (
-              <div key={rsvp.id} className="flex items-center justify-between p-3 rounded-xl border bg-white">
-                <div className="flex-1">
-                  <div className="font-medium">{rsvp.name}</div>
-                  {rsvp.guests > 1 && (
-                    <div className="text-xs text-neutral-600">+{rsvp.guests - 1} guest{rsvp.guests > 2 ? 's' : ''}</div>
-                  )}
-                </div>
-                <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
-                  rsvp.pieType === 'sweet' 
-                    ? 'bg-amber-100 text-amber-800' 
-                    : 'bg-purple-100 text-purple-800'
-                }`}>
-                  {rsvp.pieType === 'sweet' ? '🥧 Sweet' : '🧀 Savory'}
-                </span>
+              <div key={rsvp.id} className="p-3 rounded-xl border bg-white">
+                {editingRsvp?.id === rsvp.id ? (
+                  // Edit mode
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-xs font-medium mb-1">Pie Name</label>
+                      <input 
+                        className="input text-sm" 
+                        placeholder="e.g., Apple Pie, Chicken Pot Pie" 
+                        value={editPieName} 
+                        onChange={e=>setEditPieName(e.target.value)} 
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <button 
+                        className="btn btn-primary text-xs py-1.5"
+                        onClick={async () => {
+                          try {
+                            await updateRSVP(rsvp.id, { pieName: editPieName.trim() || null })
+                            const updated = await listRSVPs()
+                            setRsvps(updated)
+                            setEditingRsvp(null)
+                            setEditPieName('')
+                          } catch (e: any) {
+                            alert(`Failed to update: ${e?.message || e}`)
+                          }
+                        }}
+                      >
+                        Save
+                      </button>
+                      <button 
+                        className="btn btn-secondary text-xs py-1.5"
+                        onClick={() => {
+                          setEditingRsvp(null)
+                          setEditPieName('')
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  // View mode
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1">
+                      <div className="font-medium">{rsvp.name}</div>
+                      {rsvp.pieName && (
+                        <div className="text-sm text-neutral-700 mt-0.5">{rsvp.pieName}</div>
+                      )}
+                      {rsvp.guests > 1 && (
+                        <div className="text-xs text-neutral-600 mt-0.5">+{rsvp.guests - 1} guest{rsvp.guests > 2 ? 's' : ''}</div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
+                        rsvp.pieType === 'sweet' 
+                          ? 'bg-amber-100 text-amber-800' 
+                          : 'bg-purple-100 text-purple-800'
+                      }`}>
+                        {rsvp.pieType === 'sweet' ? '🥧 Sweet' : '🧀 Savory'}
+                      </span>
+                      <button 
+                        className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                        onClick={() => {
+                          setEditingRsvp(rsvp)
+                          setEditPieName(rsvp.pieName || '')
+                        }}
+                      >
+                        {rsvp.pieName ? 'Edit' : 'Add Pie Name'}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>

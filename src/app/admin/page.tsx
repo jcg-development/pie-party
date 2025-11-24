@@ -98,6 +98,7 @@ export default function AdminPage() {
       email: r.email || '',
       guests: r.guests,
       pieType: r.pieType,
+      pieName: r.pieName || '',
       notes: r.notes || '',
       createdAt: r.createdAt?.toDate().toISOString() || '',
     }))
@@ -294,6 +295,7 @@ export default function AdminPage() {
                       <th className="py-2 pr-3">Email</th>
                       <th className="py-2 pr-3">Guests</th>
                       <th className="py-2 pr-3">Pie Type</th>
+                      <th className="py-2 pr-3">Pie Name</th>
                       <th className="py-2 pr-3">Notes</th>
                       <th className="py-2 pr-3">Actions</th>
                     </tr>
@@ -313,6 +315,7 @@ export default function AdminPage() {
                             {r.pieType === 'sweet' ? '🥧 Sweet' : '🧀 Savory'}
                           </span>
                         </td>
+                        <td className="py-2 pr-3 text-neutral-700">{r.pieName || <span className="text-neutral-400">—</span>}</td>
                         <td className="py-2 pr-3 text-neutral-600 text-xs max-w-xs truncate">{r.notes || '—'}</td>
                         <td className="py-2 pr-3">
                           <button

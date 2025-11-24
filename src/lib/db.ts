@@ -132,6 +132,7 @@ export interface RSVP {
   email: string | null
   guests: number
   pieType: 'sweet' | 'savory'
+  pieName: string | null
   notes: string | null
   createdAt?: Timestamp
 }
@@ -152,6 +153,10 @@ export async function getPieTypeCounts(): Promise<{ sweet: number; savory: numbe
     else if (rsvp.pieType === 'savory') counts.savory++
   })
   return counts
+}
+
+export async function updateRSVP(rsvpId: string, data: Partial<Omit<RSVP, 'id' | 'createdAt'>>) {
+  await updateDoc(doc(db, 'rsvps', rsvpId), data)
 }
 
 export async function deleteRSVP(rsvpId: string) {
