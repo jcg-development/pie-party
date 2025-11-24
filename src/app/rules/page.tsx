@@ -66,13 +66,41 @@ export default function RulesPage() {
           </div>
         </div>
         <p className="text-xs text-neutral-500 mt-4">
-          Want more categories? Edit them in <code>src/lib/config.ts</code> and they’ll appear in Vote & Tally automatically.
+      
         </p>
+      </section>
+
+      {/* How Votes Will Be Tallied */}
+      <section className="card p-6">
+        <h3 className="text-xl font-semibold flex items-center gap-2">📊 How Votes Will Be Tallied</h3>
+        <div className="mt-4 space-y-4 text-neutral-700">
+          <p className="leading-relaxed">
+            Each person will have <strong>three votes</strong>, they will submit one vote per category.
+          </p>
+          
+          <div className="rounded-lg bg-blue-50 border border-blue-200 p-4">
+            <p className="font-semibold text-blue-900 mb-2">📝 Example:</p>
+            <p className="text-sm leading-relaxed">
+              Suppose Donnie is getting ready to submit his vote and he likes Max's pie for all around taste, then he will vote for Max's pie for taste. Donnie is also allowed to vote for Max's pie's for other categories as well. For that matter if Donnie is so smitten by Max's pie's taste, piezaz, and presentation he could vote for Max in all three categories, giving Max three tallies.
+            </p>
+          </div>
+
+          <p className="leading-relaxed">
+            Or instead Donnie(because he's read the rules and knows how they work) could vote for Franny's pie in the presentation category and Sarah's pie in the Piezaz category.
+          </p>
+
+          <div className="rounded-lg bg-amber-50 border border-amber-200 p-4">
+            <p className="font-semibold text-amber-900 mb-1">🔄 Vote Changes:</p>
+            <p className="text-sm leading-relaxed">
+              Donnie can change his vote at any point during the voting period. Once voting is closed whichever votes he logged last will go towards the official vote score.
+            </p>
+          </div>
+        </div>
       </section>
 
       {/* Footer note */}
       <p className="text-sm text-neutral-600">
-        Customize anything here to match your party vibes. Add or remove sections freely.
+        Hi 
       </p>
     </div>
   )
