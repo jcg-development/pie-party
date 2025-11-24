@@ -19,6 +19,7 @@ export default function HomePage() {
           <div className="flex items-center gap-3 mb-3">
             <span className="text-4xl">🥧</span>
             <span className="badge">Pie Party 2025</span>
+            <span className="pill"> December 6th</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-extrabold leading-tight">
             Welcome to the Pie Party <span className="text-pp-crust" style={{color:'var(--pp-crust)'}}>&amp; Competition</span>!
@@ -67,7 +68,7 @@ export default function HomePage() {
       <section className="card">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            🕐 Event Timeline
+            🕐 Event Timeline 
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
