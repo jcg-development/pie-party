@@ -82,12 +82,9 @@ export default function RulesPage() {
             <p className="font-semibold text-blue-900 mb-2">📝 Example:</p>
             <p className="text-sm leading-relaxed">
               Suppose Donnie is getting ready to submit his vote and he likes Max's pie for all around taste, then he will vote for Max's pie for taste. Donnie is also allowed to vote for Max's pie's for other categories as well. For that matter if Donnie is so smitten by Max's pie's taste, piezaz, and presentation he could vote for Max in all three categories, giving Max three tallies.
+              Or instead Donnie(because he's read the rules and knows how they work) could vote for Franny's pie in the presentation category and Sarah's pie in the Piezaz category.
             </p>
           </div>
-
-          <p className="leading-relaxed">
-            Or instead Donnie(because he's read the rules and knows how they work) could vote for Franny's pie in the presentation category and Sarah's pie in the Piezaz category.
-          </p>
 
           <div className="rounded-lg bg-amber-50 border border-amber-200 p-4">
             <p className="font-semibold text-amber-900 mb-1">🔄 Vote Changes:</p>

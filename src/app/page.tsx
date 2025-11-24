@@ -51,7 +51,7 @@ export default function HomePage() {
           </CardHeader>
           <CardContent className="space-y-3">
             <p className="text-neutral-700">
-              Who will take home the golden spatula? Encourage friends to vote and let the best crust win.
+              Encourage friends to vote and let the best pie win! 
             </p>
             <div className="rounded-2xl border p-4 bg-amber-50/80">
               <div className="text-sm"><strong>Tip:</strong> Photos help votes! Natural light makes your pie irresistible.</div>
