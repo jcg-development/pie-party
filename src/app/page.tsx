@@ -105,36 +105,44 @@ export default function HomePage() {
         </CardContent>
       </section>
 
-      {/* Live Tally preview */}
+      {/* Scoring Info */}
       <section className="card">
         <CardHeader className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
-            📊 Live Tally
+            🏆 How Winners Are Chosen
             <span className="badge">{votingOpen ? 'Voting Open' : 'Voting Closed'}</span>
           </CardTitle>
           <Link href="/vote" className="btn btn-secondary">{votingOpen ? 'Vote Now' : 'View Results'}</Link>
         </CardHeader>
-        <CardContent className="grid md:grid-cols-3 gap-4 p-6">
-          <div className="rounded-2xl border p-5 bg-white/70">
-            <div className="font-semibold mb-2">PieZaz</div>
-            <div className="h-3 w-full rounded-full bg-neutral-100 overflow-hidden">
-              <div className="h-full" style={{width:'32%', background:'linear-gradient(90deg,#FAD7A0,var(--pp-butter))'}}/>
+        <CardContent className="space-y-4 p-6">
+          <p className="text-neutral-700">
+            Winners are determined by <strong>combined totals</strong> across all three voting categories.
+          </p>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="rounded-xl border-2 border-amber-200 p-4 bg-amber-50">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-2xl">🥧</span>
+                <div className="font-bold text-amber-900">Sweet Pie Winner</div>
+              </div>
+              <p className="text-sm text-amber-700">
+                The sweet pie with the most combined votes across PieZaz, Taste, and Presentation wins!
+              </p>
             </div>
-            <div className="text-xs text-neutral-500 mt-2">Example tally preview</div>
+            <div className="rounded-xl border-2 border-purple-200 p-4 bg-purple-50">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-2xl">🧀</span>
+                <div className="font-bold text-purple-900">Savory Pie Winner</div>
+              </div>
+              <p className="text-sm text-purple-700">
+                The savory pie with the most combined votes across PieZaz, Taste, and Presentation wins!
+              </p>
+            </div>
           </div>
-          <div className="rounded-2xl border p-5 bg-white/70">
-            <div className="font-semibold mb-2">Taste</div>
-            <div className="h-3 w-full rounded-full bg-neutral-100 overflow-hidden">
-              <div className="h-full" style={{width:'45%', background:'linear-gradient(90deg,#C7B8F9,#7C3AED)'}}/>
+          <div className="rounded-lg bg-blue-50 border border-blue-200 p-4">
+            <div className="text-sm text-blue-900">
+              <strong>Example:</strong> If a pie gets 4 PieZaz votes, 5 Taste votes, and 2 Presentation votes, 
+              their total score is <strong>11 votes</strong>. The pie with the highest combined total in each category (sweet/savory) wins!
             </div>
-            <div className="text-xs text-neutral-500 mt-2">Example tally preview</div>
-          </div>
-          <div className="rounded-2xl border p-5 bg-white/70">
-            <div className="font-semibold mb-2">Presentation</div>
-            <div className="h-3 w-full rounded-full bg-neutral-100 overflow-hidden">
-              <div className="h-full" style={{width:'27%', background:'linear-gradient(90deg,#FDE68A,#F59E0B)'}}/>
-            </div>
-            <div className="text-xs text-neutral-500 mt-2">Example tally preview</div>
           </div>
         </CardContent>
       </section>

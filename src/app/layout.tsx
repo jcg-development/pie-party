@@ -30,6 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <a className="navlink" href="/submit">Submit</a>
               <a className="navlink" href="/vote">Vote</a>
               <a className="navlink" href="/winners">Winners</a>
+              <a className="navlink" href="/feedback">Feedback</a>
               <a className="navlink" href="/admin">Admin</a>
             </nav>
           </div>

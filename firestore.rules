@@ -1,0 +1,56 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is an admin
+    function isAdmin() {
+      return request.auth != null && 
+             exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+    
+    // All documents are readable by anyone
+    match /{document=**} {
+      allow read: if true;
+    }
+    
+    // Admins collection - users can enroll themselves
+    match /admins/{uid} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == uid;
+    }
+    
+    // Votes - users can only write their own, but admins can write any
+    match /votes/{uid} {
+      allow write: if (request.auth != null && request.auth.uid == uid) || isAdmin();
+    }
+    
+    // Pies - authenticated users can create, admins can delete
+    match /pies/{docId} {
+      allow create: if request.auth != null;
+      allow delete: if isAdmin();
+      allow update: if isAdmin();
+    }
+    
+    // Winners - admins only
+    match /winners/{docId} {
+      allow write: if isAdmin();
+    }
+    
+    // Settings - admins only
+    match /settings/{docId} {
+      allow write: if isAdmin();
+    }
+    
+    // RSVPs - authenticated users can create/update, admins can delete
+    match /rsvps/{docId} {
+      allow create, update: if request.auth != null;
+      allow delete: if isAdmin();
+    }
+    
+    // Feedback - authenticated users can create, admins can read/delete
+    match /feedback/{docId} {
+      allow create: if request.auth != null;
+      allow read, delete: if isAdmin();
+    }
+  }
+}
